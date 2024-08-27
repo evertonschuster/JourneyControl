@@ -17,9 +17,18 @@
             <!-- Today Summary -->
             <StackPanel Margin="0,20,0,0">
                 <TextBlock Text="Hoje" FontSize="16" FontWeight="Bold" />
+
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="Total de Hoje: " FontSize="14" Margin="0,0,0,10"/>
-                    <TextBlock Name="TodayTotal" Text="00:00:00" FontSize="14" Margin="0,0,0,10"/>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                        <TextBlock Text="Total de Hoje: " FontSize="14" Margin="0,0,0,10"/>
+                        <TextBlock Name="TodayTotal" Text="00:00:00" FontSize="14" Margin="0,0,0,10"/>
+                    </StackPanel>
+
+
+                    <StackPanel Margin="34,0,0,0" Orientation="Horizontal" >
+                        <Image Name="WorkingImage" Height="32" Width="32" Source="/150433.png"/>
+                        <Image Name="SleepingImage" Height="32" Width="32" Source="/1422872.png" Visibility="Collapsed"/>
+                    </StackPanel>
                 </StackPanel>
             </StackPanel>
 

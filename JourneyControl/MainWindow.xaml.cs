@@ -22,7 +22,7 @@ namespace JourneyControl
     /// </summary>
     public partial class MainWindow : Window
     {
-        private IActivityService? ActivityService { get; }
+        private IActivityService ActivityService { get; }
         private DispatcherTimer ClockTimer { get; } 
 
         public MainWindow()
@@ -39,10 +39,6 @@ namespace JourneyControl
                 context.Database.Migrate();
 
                 ActivityService = new ActivityService(new ActivityRepository(context), new ActivityMonitor());
-                ActivityService.OnChange((e) =>
-                {
-                    Console.WriteLine("asksdakjsdabdahkasdkdhjkas" + e.ToString());
-                });
                 ActivityService.StartMonitoring();
 
             }
@@ -59,17 +55,13 @@ namespace JourneyControl
             ClockTimer.Start();
         }
 
-        private void RunClock(object sender, ElapsedEventArgs e)
-        {
-            //var time = TimeSpan.Parse(WorkTime.Content.ToString());
-            //time = time.Add(TimeSpan.FromSeconds(1));
-            //WorkTime.Content = time.ToString();
-        }
-
         public void UpdateClock(object? sender, EventArgs e)
         {
             var today = ActivityService.GetTodayActivity();
-            TodayTotal.Text = today.ToString("HH:mm:ss");
+            TodayTotal.Text = today.time.ToString("HH:mm:ss");
+
+            WorkingImage.Visibility = today.isActive ? Visibility.Visible : Visibility.Collapsed;
+            SleepingImage.Visibility = today.isActive ? Visibility.Collapsed : Visibility.Visible;
         }
     }
 }

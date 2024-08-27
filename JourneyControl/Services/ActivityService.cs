@@ -6,13 +6,12 @@ namespace JourneyControl.Services
 {
     internal class ActivityService : IActivityService
     {
-        private const int _monitoringInterval = 1 * 60 * 1000;
+        private const int _monitoringInterval = 1 * 10 * 1000;
 
         public IActivityRepository ActivityRepository { get; }
         public IActivityMonitor ActivityMonitor { get; }
 
         protected System.Timers.Timer? Timer;
-        private readonly List<Action<Activity>> _events = new List<Action<Activity>>();
 
         public ActivityService(IActivityRepository activityRepository, IActivityMonitor activityMonitor)
         {
@@ -50,50 +49,46 @@ namespace JourneyControl.Services
             };
 
             ActivityRepository.Save(model);
-            foreach (var item in _events)
-            {
-                item(model);
-            }
         }
 
-        public void OnChange(Action<Activity> @event)
+        public (TimeOnly time, bool isActive) GetTodayActivity()
         {
-            _events.Add(@event);
-        }
-
-        public TimeOnly GetTodayActivity()
-        {
-            var activity = ActivityRepository.GetDateActivity(DateTime.UtcNow)
+            var activities = ActivityRepository.GetDateActivity(DateTime.UtcNow)
                 .OrderBy(e => e.ActivityAt)
                 .ToArray();
-            var totalActive = TimeSpan.Zero;
 
-            for (int i = 1; i < activity.Count(); i++)
+            if (activities.Length == 0)
             {
-                var before = activity[i - 1];
-                var current = activity[i];
+                return (new TimeOnly(0), false);
+            }
 
-                if (current.IsActive)
+            var totalActive = TimeSpan.Zero;
+            var monitoringInterval = TimeSpan.FromMilliseconds(_monitoringInterval);
+
+            for (int i = 1; i < activities.Length; i++)
+            {
+                if (activities[i].IsActive)
                 {
-                    var time = current.ActivityAt - before.ActivityAt;
-                    if (time <= TimeSpan.FromMilliseconds(_monitoringInterval))
+                    var timeDifference = activities[i].ActivityAt - activities[i - 1].ActivityAt;
+                    if (timeDifference <= monitoringInterval)
                     {
-                        totalActive += time;
+                        totalActive += timeDifference;
                     }
                 }
             }
 
-            var lastActivity = activity.LastOrDefault();
-            if (lastActivity?.IsActive == true)
+            var lastActivity = activities.LastOrDefault();
+
+            if (lastActivity?.IsActive ?? false)
             {
-                var time = DateTimeOffset.Now - lastActivity.ActivityAt;
-                if (time <= TimeSpan.FromMilliseconds(_monitoringInterval))
+                var timeSinceLastActivity = DateTimeOffset.Now - lastActivity.ActivityAt;
+                if (timeSinceLastActivity <= monitoringInterval)
                 {
-                    totalActive += time;
+                    totalActive += timeSinceLastActivity;
                 }
             }
 
-            return new TimeOnly(totalActive.Ticks);
+            return (new TimeOnly(totalActive.Ticks), lastActivity?.IsActive ?? false);
         }
     }
 }
