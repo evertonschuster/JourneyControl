@@ -1,14 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using JourneyControl.Models;
 
 namespace JourneyControl.Services
 {
     internal interface IActivityService
     {
+        void OnChange(Action<Activity> @event);
         void StartMonitoring();
         void StopMonitoring();
+        public TimeOnly GetTodayActivity();
     }
 }

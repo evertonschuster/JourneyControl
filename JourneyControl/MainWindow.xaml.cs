@@ -1,4 +1,5 @@
-﻿using JourneyControl.Repositories;
+﻿using JourneyControl.Models;
+using JourneyControl.Repositories;
 using JourneyControl.Services;
 using Microsoft.EntityFrameworkCore;
 using System.Text;
@@ -12,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 
 namespace JourneyControl
 {
@@ -21,25 +23,53 @@ namespace JourneyControl
     public partial class MainWindow : Window
     {
         private IActivityService? ActivityService { get; }
+        private DispatcherTimer ClockTimer { get; } 
 
         public MainWindow()
         {
             try
             {
+                ClockTimer = new DispatcherTimer();
+                var context = new JourneyControlContext();
+
+
+                InitializeComponents();
                 InitializeComponent();
 
-                var context = new JourneyControlContext();
                 context.Database.Migrate();
 
                 ActivityService = new ActivityService(new ActivityRepository(context), new ActivityMonitor());
+                ActivityService.OnChange((e) =>
+                {
+                    Console.WriteLine("asksdakjsdabdahkasdkdhjkas" + e.ToString());
+                });
                 ActivityService.StartMonitoring();
 
-                WorkTime.Content = "00:00:01";
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.ToString());
             }
+        }
+
+        private void InitializeComponents()
+        {
+            ClockTimer.Interval = TimeSpan.FromSeconds(1);
+            ClockTimer.Tick += UpdateClock;
+            ClockTimer.Start();
+        }
+
+        private void RunClock(object sender, ElapsedEventArgs e)
+        {
+            //var time = TimeSpan.Parse(WorkTime.Content.ToString());
+            //time = time.Add(TimeSpan.FromSeconds(1));
+            //WorkTime.Content = time.ToString();
+        }
+
+        public void UpdateClock(object? sender, EventArgs e)
+        {
+            var today = ActivityService.GetTodayActivity();
+            TodayTotal.Text = today.ToString("HH:mm:ss");
         }
     }
 }

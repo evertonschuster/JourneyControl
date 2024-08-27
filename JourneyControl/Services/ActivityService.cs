@@ -6,12 +6,13 @@ namespace JourneyControl.Services
 {
     internal class ActivityService : IActivityService
     {
-        private const int _monitoringInterval = 5 * 60 * 1000;
+        private const int _monitoringInterval = 1 * 60 * 1000;
 
         public IActivityRepository ActivityRepository { get; }
         public IActivityMonitor ActivityMonitor { get; }
 
         protected System.Timers.Timer? Timer;
+        private readonly List<Action<Activity>> _events = new List<Action<Activity>>();
 
         public ActivityService(IActivityRepository activityRepository, IActivityMonitor activityMonitor)
         {
@@ -45,10 +46,54 @@ namespace JourneyControl.Services
             {
                 ActivityAt = DateTimeOffset.Now,
                 Inactivity = lastActivityAt,
-                IsActive = lastActivityAt.ToTimeSpan() < TimeSpan.FromMilliseconds( _monitoringInterval)
+                IsActive = lastActivityAt.ToTimeSpan() < TimeSpan.FromMilliseconds(_monitoringInterval)
             };
 
             ActivityRepository.Save(model);
+            foreach (var item in _events)
+            {
+                item(model);
+            }
+        }
+
+        public void OnChange(Action<Activity> @event)
+        {
+            _events.Add(@event);
+        }
+
+        public TimeOnly GetTodayActivity()
+        {
+            var activity = ActivityRepository.GetDateActivity(DateTime.UtcNow)
+                .OrderBy(e => e.ActivityAt)
+                .ToArray();
+            var totalActive = TimeSpan.Zero;
+
+            for (int i = 1; i < activity.Count(); i++)
+            {
+                var before = activity[i - 1];
+                var current = activity[i];
+
+                if (current.IsActive)
+                {
+                    var time = current.ActivityAt - before.ActivityAt;
+                    if (time <= TimeSpan.FromMilliseconds(_monitoringInterval))
+                    {
+                        totalActive += time;
+                    }
+                }
+            }
+
+            var lastActivity = activity.LastOrDefault();
+            if (lastActivity?.IsActive == true)
+            {
+                var time = DateTimeOffset.Now - lastActivity.ActivityAt;
+                if (time <= TimeSpan.FromMilliseconds(_monitoringInterval))
+                {
+                    totalActive += time;
+                }
+            }
+
+            return new TimeOnly(totalActive.Ticks);
         }
     }
 }
