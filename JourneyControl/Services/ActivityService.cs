@@ -6,7 +6,8 @@ namespace JourneyControl.Services
 {
     internal class ActivityService : IActivityService
     {
-        private const int _monitoringInterval = 1 * 10 * 1000;
+        private const int _monitoringInterval = 1 * 60 * 1000;
+        private const int _tolerance = 1000;
 
         public IActivityRepository ActivityRepository { get; }
         public IActivityMonitor ActivityMonitor { get; }
@@ -63,7 +64,7 @@ namespace JourneyControl.Services
             }
 
             var totalActive = TimeSpan.Zero;
-            var monitoringInterval = TimeSpan.FromMilliseconds(_monitoringInterval);
+            var monitoringInterval = TimeSpan.FromMilliseconds(_monitoringInterval + _tolerance);
 
             for (int i = 1; i < activities.Length; i++)
             {
