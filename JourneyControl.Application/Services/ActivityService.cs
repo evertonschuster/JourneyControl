@@ -1,44 +1,27 @@
-﻿using JourneyControl.Models;
-using JourneyControl.Repositories;
-using System.Timers;
+﻿using JourneyControl.Application.Models;
+using JourneyControl.Application.Repositories;
+using Microsoft.Extensions.Configuration;
 
-namespace JourneyControl.Services
+namespace JourneyControl.Application.Services
 {
     internal class ActivityService : IActivityService
     {
-        private const int _monitoringInterval = 1 * 60 * 1000;
         private const int _tolerance = 1000;
+        private readonly int MonitoringInterval;
 
         public IActivityRepository ActivityRepository { get; }
         public IActivityMonitor ActivityMonitor { get; }
 
-        protected System.Timers.Timer? Timer;
-
-        public ActivityService(IActivityRepository activityRepository, IActivityMonitor activityMonitor)
+        public ActivityService(IActivityRepository activityRepository, IActivityMonitor activityMonitor, IConfiguration configuration)
         {
             ActivityRepository = activityRepository;
             ActivityMonitor = activityMonitor;
+
+            var timeInSecounds = configuration["MonitoringInterval"] ?? "60";
+            MonitoringInterval = int.Parse(timeInSecounds) * 1000;
         }
 
-        public void StartMonitoring()
-        {
-            RegistreActivity();
-            Timer?.Stop();
-            Timer?.Dispose();
-
-            Timer = new System.Timers.Timer(_monitoringInterval);
-            Timer.Elapsed += (object? sender, ElapsedEventArgs e) => RegistreActivity();
-            Timer.AutoReset = true;
-            Timer.Enabled = true;
-        }
-
-        public void StopMonitoring()
-        {
-            RegistreActivity();
-            Timer?.Stop();
-        }
-
-        private void RegistreActivity()
+        public void RegisterActivity()
         {
             var lastActivityAt = ActivityMonitor.GetLastActivity();
 
@@ -46,7 +29,7 @@ namespace JourneyControl.Services
             {
                 ActivityAt = DateTimeOffset.Now,
                 Inactivity = lastActivityAt,
-                IsActive = lastActivityAt.ToTimeSpan() < TimeSpan.FromMilliseconds(_monitoringInterval)
+                IsActive = lastActivityAt.ToTimeSpan() < TimeSpan.FromMilliseconds(MonitoringInterval)
             };
 
             ActivityRepository.Save(model);
@@ -64,7 +47,7 @@ namespace JourneyControl.Services
             }
 
             var totalActive = TimeSpan.Zero;
-            var monitoringInterval = TimeSpan.FromMilliseconds(_monitoringInterval + _tolerance);
+            var monitoringInterval = TimeSpan.FromMilliseconds(MonitoringInterval + _tolerance);
 
             for (int i = 1; i < activities.Length; i++)
             {

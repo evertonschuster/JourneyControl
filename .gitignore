@@ -88,3 +88,4 @@ msbuild.wrn
 
 
 *log*.txt
+/packages

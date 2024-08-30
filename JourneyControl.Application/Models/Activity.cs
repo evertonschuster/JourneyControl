@@ -1,6 +1,6 @@
-﻿namespace JourneyControl.Models
+﻿namespace JourneyControl.Application.Models
 {
-    internal class Activity
+    public class Activity
     {
         public int Id { get; init; }
 

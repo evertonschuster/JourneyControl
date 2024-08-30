@@ -1,18 +1,4 @@
-﻿using JourneyControl.Models;
-using JourneyControl.Repositories;
-using JourneyControl.Services;
-using Microsoft.EntityFrameworkCore;
-using System.Text;
-using System.Timers;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+﻿using System.Windows;
 using System.Windows.Threading;
 
 namespace JourneyControl
@@ -22,24 +8,24 @@ namespace JourneyControl
     /// </summary>
     public partial class MainWindow : Window
     {
-        private IActivityService ActivityService { get; }
-        private DispatcherTimer ClockTimer { get; } 
+        //private IActivityService ActivityService { get; }
+        private DispatcherTimer ClockTimer { get; }
 
         public MainWindow()
         {
             try
             {
                 ClockTimer = new DispatcherTimer();
-                var context = new JourneyControlContext();
+                //var context = new JourneyControlContext();
 
 
-                InitializeComponents();
-                InitializeComponent();
+                //InitializeComponents();
+                //InitializeComponent();
 
-                context.Database.Migrate();
+                //context.Database.Migrate();
 
-                ActivityService = new ActivityService(new ActivityRepository(context), new ActivityMonitor());
-                ActivityService.StartMonitoring();
+                //ActivityService = new ActivityService(new ActivityRepository(context), new ActivityMonitor());
+                //ActivityService.StartMonitoring();
 
             }
             catch (Exception e)
@@ -57,11 +43,11 @@ namespace JourneyControl
 
         public void UpdateClock(object? sender, EventArgs e)
         {
-            var today = ActivityService.GetTodayActivity();
-            TodayTotal.Text = today.time.ToString("HH:mm:ss");
+            //var today = ActivityService.GetTodayActivity();
+            //TodayTotal.Text = today.time.ToString("HH:mm:ss");
 
-            WorkingImage.Visibility = today.isActive ? Visibility.Visible : Visibility.Collapsed;
-            SleepingImage.Visibility = today.isActive ? Visibility.Collapsed : Visibility.Visible;
+            //WorkingImage.Visibility = today.isActive ? Visibility.Visible : Visibility.Collapsed;
+            //SleepingImage.Visibility = today.isActive ? Visibility.Collapsed : Visibility.Visible;
         }
     }
 }

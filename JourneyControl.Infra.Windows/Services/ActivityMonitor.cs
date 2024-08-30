@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using JourneyControl.Application.Services;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace JourneyControl.Services
+namespace JourneyControl.Infra.Windows.Services
 {
     internal class ActivityMonitor : IActivityMonitor
     {
@@ -14,9 +10,9 @@ namespace JourneyControl.Services
             int idleTime = GetIdleTime();
             Console.WriteLine($"Usuário inativo por {idleTime / 1000} segundos.");
 
-            int hours = (idleTime / (1000 * 60 * 60)) % 24;
-            int minutes = (idleTime / (1000 * 60)) % 60;
-            int seconds = (idleTime / 1000) % 60;
+            int hours = idleTime / (1000 * 60 * 60) % 24;
+            int minutes = idleTime / (1000 * 60) % 60;
+            int seconds = idleTime / 1000 % 60;
             int milliseconds = idleTime % 1000;
 
             return new TimeOnly(hours, minutes, seconds, milliseconds);

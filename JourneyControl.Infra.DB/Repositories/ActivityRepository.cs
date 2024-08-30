@@ -1,6 +1,7 @@
-﻿using JourneyControl.Models;
+﻿using JourneyControl.Application.Models;
+using JourneyControl.Application.Repositories;
 
-namespace JourneyControl.Repositories
+namespace JourneyControl.Infra.DB.Repositories
 {
     internal class ActivityRepository : IActivityRepository
     {
@@ -8,7 +9,7 @@ namespace JourneyControl.Repositories
 
         public ActivityRepository(JourneyControlContext context)
         {
-            this.Context = context;
+            Context = context;
         }
 
         public void Save(Activity model)
