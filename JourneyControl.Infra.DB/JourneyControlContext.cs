@@ -1,5 +1,4 @@
 ﻿using JourneyControl.Application.Models;
-using JourneyControl.Infra.DB.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -23,7 +22,7 @@ namespace JourneyControl.Infra.DB
                 Directory.CreateDirectory(dbPath);
             }
 
-            logger.LogInformation($"Arquivo de banco de dados configurado em: '{dbPath}'. {path}");
+            logger.LogInformation($"Arquivo de banco de dados configurado em: '{dbPath}'");
             DbPath = Path.Combine(dbPath, "Journey.db");
         }
 

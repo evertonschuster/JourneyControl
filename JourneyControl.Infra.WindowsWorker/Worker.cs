@@ -21,6 +21,8 @@ namespace App.WindowsService
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
+            _logger.LogInformation("Worker is staring at: {time}", DateTimeOffset.Now);
+
             _dbContext.Database.Migrate();
 
             var timeInSecounds = _configuration["MonitoringInterval"] ?? "60";

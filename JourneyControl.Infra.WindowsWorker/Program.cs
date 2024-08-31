@@ -24,8 +24,7 @@ builder.Services
         {
             log.SourceName = sourceName;
             log.LogName = logName;
-        })
-        .AddEventSourceLogger();
+        });
     });
 
 builder.Services.AddHostedService<Worker>();

@@ -8,7 +8,6 @@ namespace JourneyControl.Infra.Windows.Services
         public TimeOnly GetLastActivity()
         {
             int idleTime = GetIdleTime();
-            Console.WriteLine($"Usuário inativo por {idleTime / 1000} segundos.");
 
             int hours = idleTime / (1000 * 60 * 60) % 24;
             int minutes = idleTime / (1000 * 60) % 60;
