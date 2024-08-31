@@ -63,16 +63,18 @@ namespace JourneyControl.Application.Services
 
             var lastActivity = activities.LastOrDefault();
 
+            var isActive = false;
             if (lastActivity?.IsActive ?? false)
             {
                 var timeSinceLastActivity = DateTimeOffset.Now - lastActivity.ActivityAt;
                 if (timeSinceLastActivity <= monitoringInterval)
                 {
+                    isActive = true;
                     totalActive += timeSinceLastActivity;
                 }
             }
 
-            return (new TimeOnly(totalActive.Ticks), lastActivity?.IsActive ?? false);
+            return (new TimeOnly(totalActive.Ticks), isActive);
         }
     }
 }

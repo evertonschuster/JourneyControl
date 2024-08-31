@@ -14,13 +14,9 @@ if (!EventLog.SourceExists(sourceName))
 
 var builder = Host.CreateApplicationBuilder(args);
 builder.Services
-    .AddWindowsService(options =>
+    .AddLogging(logger =>
     {
-        options.ServiceName = sourceName;
-    })
-    .AddLogging(e =>
-    {
-        e.AddEventLog(log =>
+        logger.AddEventLog(log =>
         {
             log.SourceName = sourceName;
             log.LogName = logName;

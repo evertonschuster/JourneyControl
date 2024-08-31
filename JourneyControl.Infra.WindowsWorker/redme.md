@@ -1,1 +1,1 @@
-﻿sc.exe create "JourneyControl Service" binpath="win-x64\JourneyControl.Infra.WindowsWorker.exe"
+﻿shell:Startup

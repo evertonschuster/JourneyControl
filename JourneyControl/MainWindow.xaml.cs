@@ -1,4 +1,8 @@
-﻿using System.Windows;
+﻿using JourneyControl.Application.Services;
+using JourneyControl.Infra.DB;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using System.Windows;
 using System.Windows.Threading;
 
 namespace JourneyControl
@@ -8,29 +12,26 @@ namespace JourneyControl
     /// </summary>
     public partial class MainWindow : Window
     {
-        //private IActivityService ActivityService { get; }
+        private IActivityService ActivityService { get; }
         private DispatcherTimer ClockTimer { get; }
 
-        public MainWindow()
+        public MainWindow(IActivityService activityService, JourneyControlContext context, ILogger<MainWindow> logger) 
         {
             try
             {
                 ClockTimer = new DispatcherTimer();
-                //var context = new JourneyControlContext();
+                ActivityService = activityService;
+                
+                context.Database.Migrate();
 
-
-                //InitializeComponents();
-                //InitializeComponent();
-
-                //context.Database.Migrate();
-
-                //ActivityService = new ActivityService(new ActivityRepository(context), new ActivityMonitor());
-                //ActivityService.StartMonitoring();
-
+                InitializeComponents();
+                InitializeComponent();
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.ToString());
+
+                logger.LogError(e, "Erro ao inicializar a aplicação");
             }
         }
 
@@ -43,11 +44,11 @@ namespace JourneyControl
 
         public void UpdateClock(object? sender, EventArgs e)
         {
-            //var today = ActivityService.GetTodayActivity();
-            //TodayTotal.Text = today.time.ToString("HH:mm:ss");
+            var today = ActivityService.GetTodayActivity();
+            TodayTotal.Text = today.time.ToString("HH:mm:ss");
 
-            //WorkingImage.Visibility = today.isActive ? Visibility.Visible : Visibility.Collapsed;
-            //SleepingImage.Visibility = today.isActive ? Visibility.Collapsed : Visibility.Visible;
+            WorkingImage.Visibility = today.isActive ? Visibility.Visible : Visibility.Collapsed;
+            SleepingImage.Visibility = today.isActive ? Visibility.Collapsed : Visibility.Visible;
         }
     }
 }
