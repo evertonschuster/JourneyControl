@@ -15,13 +15,13 @@ namespace JourneyControl
         private IActivityService ActivityService { get; }
         private DispatcherTimer ClockTimer { get; }
 
-        public MainWindow(IActivityService activityService, JourneyControlContext context, ILogger<MainWindow> logger) 
+        public MainWindow(IActivityService activityService, JourneyControlContext context, ILogger<MainWindow> logger)
         {
             try
             {
                 ClockTimer = new DispatcherTimer();
                 ActivityService = activityService;
-                
+
                 context.Database.Migrate();
 
                 InitializeComponents();

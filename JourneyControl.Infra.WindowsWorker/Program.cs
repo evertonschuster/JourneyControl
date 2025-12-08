@@ -24,6 +24,7 @@ builder.Services
     });
 
 builder.Services.AddHostedService<Worker>();
+builder.Services.AddHostedService<ScriptExecutionWorker>();
 builder.Services.AddApplicationServices();
 builder.Services.AddWindowsApplicationServices();
 builder.Services.AddInfraDbServices();

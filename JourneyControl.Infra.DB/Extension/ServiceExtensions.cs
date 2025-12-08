@@ -10,6 +10,7 @@ namespace JourneyControl.Infra.DB.Extension
         {
             services.AddSingleton<JourneyControlContext>();
             services.AddSingleton<IActivityRepository, ActivityRepository>();
+            services.AddSingleton<ISqlScriptRepository, SqlScriptRepository>();
 
             return services;
         }

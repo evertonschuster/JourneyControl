@@ -2,10 +2,7 @@
 using JourneyControl.GUI.Extension;
 using JourneyControl.Infra.DB.Extension;
 using JourneyControl.Infra.Windows.Extension;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System.Configuration;
-using System.IO;
 using System.Windows;
 
 namespace JourneyControl
